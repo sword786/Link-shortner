@@ -1,0 +1,6 @@
+{
+  "name": "SnipLink URL Shortener",
+  "description": "A full-featured, SEO-friendly URL shortener built with React and Firebase.",
+  "requestFramePermissions": [],
+  "majorCapabilities": []
+}

@@ -1,0 +1,25 @@
+{
+  "entities": {
+    "Link": {
+      "title": "Link",
+      "description": "A shortened URL record",
+      "type": "object",
+      "properties": {
+        "originalUrl": { "type": "string" },
+        "shortCode": { "type": "string" },
+        "userId": { "type": "string" },
+        "title": { "type": "string" },
+        "clicks": { "type": "number" },
+        "createdAt": { "type": "timestamp" },
+        "updatedAt": { "type": "timestamp" }
+      },
+      "required": ["originalUrl", "shortCode", "createdAt", "updatedAt", "clicks"]
+    }
+  },
+  "firestore": {
+    "links/{shortCode}": {
+      "schema": { "$ref": "#/entities/Link" },
+      "description": "Stored links"
+    }
+  }
+}
