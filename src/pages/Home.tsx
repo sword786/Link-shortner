@@ -1,6 +1,6 @@
 import React, { useState } from 'react';
 import { motion, AnimatePresence } from 'motion/react';
-import { Link2, Scissors, BarChart3, ArrowRight, Check, Copy } from 'lucide-react';
+import { Link2, Scissors, Shield, ArrowRight, Check, Copy } from 'lucide-react';
 import { doc, getDoc, setDoc, serverTimestamp } from 'firebase/firestore';
 import { db } from '../lib/firebase';
 import { useAuth } from '../lib/useAuth';
@@ -85,7 +85,6 @@ export function Home() {
       const linkData = {
         originalUrl: validUrl,
         shortCode: code,
-        clicks: 0,
         createdAt: serverTimestamp(),
         updatedAt: serverTimestamp(),
         ...(user ? { userId: user.uid } : {})
@@ -148,7 +147,7 @@ export function Home() {
           transition={{ delay: 0.2 }}
           className="text-lg md:text-xl text-slate-500 max-w-3xl mx-auto"
         >
-          The all-in-one link engine with deep analytics, SEO-ready slugs, and instant branding.
+          The all-in-one link engine with SEO-ready slugs, and instant branding.
         </motion.p>
       </div>
 
@@ -235,12 +234,9 @@ export function Home() {
             </div>
             {!user && (
               <div className="mt-4 text-center text-sm text-slate-500">
-                Log in to claim this link, customize aliases, and track analytics!
+                Log in to claim this link and customize aliases!
               </div>
             )}
-            <div className="mt-3 text-center text-xs font-medium text-slate-400">
-              Note: The base URL might look long right now because you are in a preview environment. When you deploy this app to your own custom domain (e.g., mysite.co), the links will be perfectly short!
-            </div>
           </motion.div>
         )}
       </AnimatePresence>
@@ -260,10 +256,10 @@ export function Home() {
         </div>
         <div className="bg-white p-6 justify-start rounded-3xl border border-slate-100 shadow-sm flex flex-col items-start transition hover:shadow-md">
           <div className="w-10 h-10 bg-emerald-100 text-emerald-600 rounded-lg flex items-center justify-center mb-4">
-            <BarChart3 size={22} strokeWidth={2.5} />
+            <Shield size={22} strokeWidth={2.5} />
           </div>
-          <h3 className="font-bold text-slate-800 text-lg">Smart Data</h3>
-          <p className="text-sm text-slate-500 mt-1">Detailed geo and device analytics available instantly.</p>
+          <h3 className="font-bold text-slate-800 text-lg">Privacy First</h3>
+          <p className="text-sm text-slate-500 mt-1">No tracking, no cookies. Lightning fast and completely private redirects.</p>
         </div>
         <div className="bg-white p-6 justify-start rounded-3xl border border-slate-100 shadow-sm flex flex-col items-start transition hover:shadow-md">
           <div className="w-10 h-10 bg-violet-100 text-violet-600 rounded-lg flex items-center justify-center mb-4">

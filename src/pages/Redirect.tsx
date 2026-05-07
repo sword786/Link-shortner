@@ -1,6 +1,6 @@
 import { useEffect, useRef, useState } from 'react';
 import { useParams } from 'react-router-dom';
-import { doc, getDoc, updateDoc, increment, serverTimestamp } from 'firebase/firestore';
+import { doc, getDoc } from 'firebase/firestore';
 import { db, auth } from '../lib/firebase';
 import { Loader2, AlertCircle } from 'lucide-react';
 import { handleFirestoreError, OperationType } from '../lib/utils';
@@ -28,24 +28,6 @@ export function Redirect() {
         if (docSnap && docSnap.exists()) {
           const data = docSnap.data();
           const targetUrl = data.originalUrl;
-          
-          try {
-            // Trigger analytics update
-            const updatePromise = updateDoc(docRef, {
-              clicks: increment(1),
-              updatedAt: serverTimestamp()
-            });
-
-            // Race the update against a very short 150ms timeout.
-            // This guarantees the redirect feels instant, even if the database write is slow,
-            // while still allowing the write sufficient time to dispatch to the network.
-            await Promise.race([
-              updatePromise,
-              new Promise((resolve) => setTimeout(resolve, 150))
-            ]);
-          } catch(err) {
-            console.error("Analytics update skipped or failed", err);
-          }
           
           // Use replace instead of href to avoid cluttering browser history
           window.location.replace(targetUrl);

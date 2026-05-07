@@ -100,11 +100,6 @@ export function Dashboard() {
             <p className="text-sm text-slate-400 font-bold uppercase tracking-wider mb-1">Total Links</p>
             <p className="text-2xl font-black text-slate-900">{links.length}</p>
           </div>
-          <div className="w-px bg-slate-200"></div>
-          <div>
-            <p className="text-sm text-slate-400 font-bold uppercase tracking-wider mb-1">Total Clicks</p>
-            <p className="text-2xl font-black text-indigo-600">{links.reduce((acc, curr) => acc + (curr.clicks || 0), 0)}</p>
-          </div>
         </div>
       </div>
 
@@ -122,7 +117,6 @@ export function Dashboard() {
                 <tr className="bg-slate-50 border-b border-slate-200 text-xs uppercase tracking-wider text-slate-500 font-bold">
                   <th className="px-6 py-4">Original URL</th>
                   <th className="px-6 py-4">Short Link</th>
-                  <th className="px-6 py-4">Clicks</th>
                   <th className="px-6 py-4">Created</th>
                   <th className="px-6 py-4 text-right">Actions</th>
                 </tr>
@@ -140,11 +134,6 @@ export function Dashboard() {
                         {link.shortCode}
                         <ExternalLink size={14} className="opacity-0 group-hover:opacity-100 transition" />
                       </a>
-                    </td>
-                    <td className="px-6 py-4">
-                      <span className="inline-flex items-center px-2.5 py-0.5 rounded-full text-xs font-bold bg-indigo-100 text-indigo-800">
-                        {link.clicks || 0}
-                      </span>
                     </td>
                     <td className="px-6 py-4 text-slate-500 text-sm whitespace-nowrap font-medium">
                       {link.createdAt ? format(link.createdAt.toMillis(), 'MMM d, yyyy') : 'Unknown'}
