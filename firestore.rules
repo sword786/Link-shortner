@@ -14,12 +14,11 @@ service cloud.firestore {
     function isSignedIn() { return request.auth != null; }
 
     function isValidLink(data) {
-      return data.keys().hasAll(['originalUrl', 'shortCode', 'createdAt', 'updatedAt', 'clicks']) &&
+      return data.keys().hasAll(['originalUrl', 'shortCode', 'createdAt', 'updatedAt']) &&
              data.originalUrl is string && data.originalUrl.size() > 0 && data.originalUrl.size() <= 2048 &&
              data.shortCode is string && data.shortCode.size() > 0 && data.shortCode.size() <= 128 && data.shortCode.matches('^[a-zA-Z0-9_\\-]+$') &&
              data.createdAt is timestamp &&
              data.updatedAt is timestamp &&
-             data.clicks is number &&
              (data.get('userId', '') is string) && (data.get('userId', '').size() <= 128) &&
              (data.get('title', '') is string) && (data.get('title', '').size() <= 200);
     }
@@ -36,24 +35,17 @@ service cloud.firestore {
                          (incoming().get('userId', '') == '' && !isSignedIn()) ||
                          (isSignedIn() && incoming().userId == request.auth.uid)
                        ) &&
-                       incoming().clicks == 0 &&
                        incoming().createdAt == request.time &&
                        incoming().updatedAt == request.time;
 
       allow update: if isValidId(shortCode) && isValidLink(incoming()) && (
-        (
-          incoming().diff(existing()).affectedKeys().hasOnly(['clicks', 'updatedAt']) &&
-          incoming().clicks == existing().clicks + 1 &&
-          incoming().updatedAt == request.time
-        ) ||
         (
           isSignedIn() && existing().userId == request.auth.uid &&
           incoming().diff(existing()).affectedKeys().hasOnly(['title', 'originalUrl', 'updatedAt']) &&
           incoming().updatedAt == request.time &&
           incoming().userId == existing().userId &&
           incoming().shortCode == existing().shortCode &&
-          incoming().createdAt == existing().createdAt &&
-          incoming().clicks == existing().clicks
+          incoming().createdAt == existing().createdAt
         )
       );
 

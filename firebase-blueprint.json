@@ -9,11 +9,10 @@
         "shortCode": { "type": "string" },
         "userId": { "type": "string" },
         "title": { "type": "string" },
-        "clicks": { "type": "number" },
         "createdAt": { "type": "timestamp" },
         "updatedAt": { "type": "timestamp" }
       },
-      "required": ["originalUrl", "shortCode", "createdAt", "updatedAt", "clicks"]
+      "required": ["originalUrl", "shortCode", "createdAt", "updatedAt"]
     }
   },
   "firestore": {
