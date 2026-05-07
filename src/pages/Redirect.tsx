@@ -1,18 +1,19 @@
-import { useEffect } from 'react';
+import { useEffect, useRef, useState } from 'react';
 import { useParams } from 'react-router-dom';
 import { doc, getDoc, updateDoc, increment, serverTimestamp } from 'firebase/firestore';
 import { db, auth } from '../lib/firebase';
 import { Loader2, AlertCircle } from 'lucide-react';
-import { useState } from 'react';
 import { handleFirestoreError, OperationType } from '../lib/utils';
 
 export function Redirect() {
   const { shortCode } = useParams<{ shortCode: string }>();
   const [error, setError] = useState<string | null>(null);
+  const isProcessing = useRef(false);
 
   useEffect(() => {
     async function performRedirect() {
-      if (!shortCode) return;
+      if (!shortCode || isProcessing.current) return;
+      isProcessing.current = true;
       
       try {
         const docRef = doc(db, 'links', shortCode);
@@ -29,18 +30,25 @@ export function Redirect() {
           const targetUrl = data.originalUrl;
           
           try {
-            // Increment analytics
-            await updateDoc(docRef, {
+            // Trigger analytics update
+            const updatePromise = updateDoc(docRef, {
               clicks: increment(1),
               updatedAt: serverTimestamp()
             });
+
+            // Race the update against a very short 150ms timeout.
+            // This guarantees the redirect feels instant, even if the database write is slow,
+            // while still allowing the write sufficient time to dispatch to the network.
+            await Promise.race([
+              updatePromise,
+              new Promise((resolve) => setTimeout(resolve, 150))
+            ]);
           } catch(err) {
-            handleFirestoreError(err, OperationType.UPDATE, `links/${shortCode}`, auth);
-            // We ignore error here to ensure redirect still works instead of returning
+            console.error("Analytics update skipped or failed", err);
           }
           
-          // Redirect
-          window.location.href = targetUrl;
+          // Use replace instead of href to avoid cluttering browser history
+          window.location.replace(targetUrl);
         } else {
           setError('We could not find that short link in our system.');
         }
@@ -71,9 +79,12 @@ export function Redirect() {
   }
 
   return (
-    <div className="flex-1 flex flex-col items-center justify-center p-6 bg-slate-50">
-      <Loader2 className="animate-spin text-indigo-600 mb-4" size={48} />
-      <h2 className="text-xl font-bold text-slate-900">Redirecting...</h2>
+    <div className="flex-1 flex flex-col items-center justify-center p-6 bg-slate-50 h-[100dvh]">
+      <div className="flex flex-col items-center animate-pulse">
+        <Loader2 className="animate-spin text-indigo-600 mb-6" size={56} strokeWidth={3} />
+        <h2 className="text-2xl font-black text-slate-900 tracking-tight">Bolt It!</h2>
+        <p className="text-slate-500 font-medium mt-2">Connecting to your destination...</p>
+      </div>
     </div>
   );
 }
